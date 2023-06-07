@@ -17,6 +17,8 @@ class PacmanGame extends FlameGame
         HasCollisionDetection,
         HasKeyboardHandlerComponents,
         HasGameRef<PacmanGame> {
+  FirebaseDatabase database = FirebaseDatabase.instance;
+
   double xOffset = 70;
   final world = World();
   late final CameraComponent cameraComponent;
