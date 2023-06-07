@@ -13,8 +13,10 @@ dependencies:
     sdk: flutter
   flame: ^1.0.0
   bonfire: ^2.12.5
+  firebase_core: ^2.13.1
 
   cupertino_icons: ^1.0.2
+  firebase_database: ^10.2.2
 
 dev_dependencies:
   flutter_test:

@@ -10,6 +10,7 @@ import 'package:flame/events.dart';
 import 'object/dot.dart';
 import 'object/wall.dart';
 import 'segment/segment_manager.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class PacmanGame extends FlameGame
     with

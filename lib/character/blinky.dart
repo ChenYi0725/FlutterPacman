@@ -38,6 +38,56 @@ class Blinky extends SpriteAnimationComponent
     isFrightened = true;
   }
 
+  void frightenedMove(dt) {
+    switch (currentDirection) {
+      case MovingDirection.stop:
+        velocity.x = 0;
+        velocity.y = 0;
+        break;
+      case MovingDirection.up:
+        if (!isUpWall) {
+          velocity.x = 0;
+          velocity.y = moveSpeed;
+        } else {
+          currentDirection = MovingDirection.stop;
+        }
+        break;
+      case MovingDirection.down:
+        if (!isDownWall) {
+          velocity.x = 0;
+          velocity.y = -moveSpeed;
+        } else {
+          currentDirection = MovingDirection.stop;
+        }
+        break;
+      case MovingDirection.left:
+        if (!isLeftWall) {
+          velocity.y = 0;
+          velocity.x = moveSpeed;
+        } else {
+          currentDirection = MovingDirection.stop;
+        }
+        break;
+      case MovingDirection.right:
+        if (!isRightWall) {
+          velocity.y = 0;
+          velocity.x = -moveSpeed;
+        } else {
+          currentDirection = MovingDirection.stop;
+        }
+        break;
+    }
+    position += velocity * dt;
+    if (isDirectionChanged) {
+      position = Vector2(
+        (gridPosition.x * size.x) + xOffset,
+        gridPosition.y * size.y,
+      );
+      isDirectionChanged = false;
+    }
+    super.update(dt);
+  }
+
   @override
   void onLoad() {
     add(RectangleHitbox());
@@ -73,7 +123,6 @@ class Blinky extends SpriteAnimationComponent
   }
 
   void chase() {
-    print(isPacmanLeft());
     previousDirection = currentDirection;
     final mapIndex = (gridPosition.x + gridPosition.y * 20) as int;
     switch (map[mapIndex] & 15) {
@@ -207,7 +256,12 @@ class Blinky extends SpriteAnimationComponent
   @override
   void update(double dt) {
     chase();
-    move(dt);
+    if (isFrightened) {
+      frightenedMove(dt);
+    } else {
+      move(dt);
+    }
+
     calculateGridPosition();
     findPassableWay();
     super.update(dt);
@@ -216,7 +270,11 @@ class Blinky extends SpriteAnimationComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Pacman) {
-      other.removeFromParent();
+      if (isFrightened) {
+        removeFromParent();
+      } else {
+        other.removeFromParent();
+      }
     }
   }
 

@@ -13,7 +13,6 @@ class Pacman extends SpriteAnimationComponent
   bool isDirectionChanged = false;
   late MovingDirection previousDirection;
   Vector2 gridPosition = Vector2(10, 6);
-  Vector2 hitAngle = Vector2(0, -1);
   double xOffset;
   MovingDirection currentDirection = MovingDirection.stop;
   bool isUpWall = false;
@@ -96,7 +95,6 @@ class Pacman extends SpriteAnimationComponent
   }
 
   void findPassableWay() {
-    // print(isLeftWall);
     final mapIndex = (gridPosition.x + gridPosition.y * 20) as int;
     isUpWall = false;
     isDownWall = false;

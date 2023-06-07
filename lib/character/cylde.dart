@@ -92,6 +92,7 @@ class Clyde extends SpriteAnimationComponent
       if (isFrightened) {
         gridPosition = Vector2(10, 11);
         isFrightened = false;
+        removeFromParent();
       } else {
         other.removeFromParent();
       }
