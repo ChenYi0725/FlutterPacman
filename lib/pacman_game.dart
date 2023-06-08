@@ -57,7 +57,7 @@ class PacmanGame extends FlameGame
 
   void drawGhost() {
     add(clyde);
-    add(blinky);
+    //add(blinky);
   }
 
   void drawMap(List map, double xOffset) {

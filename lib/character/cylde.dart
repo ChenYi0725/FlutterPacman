@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flame_testing/segment/segment_manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame_testing/enum.dart';
@@ -12,7 +13,6 @@ class Clyde extends SpriteAnimationComponent
   final Vector2 velocity = Vector2.zero();
   final double moveSpeed = 150;
   bool isDirectionChanged = false;
-  late MovingDirection previousDirection;
   Vector2 gridPosition = Vector2(10, 11);
   double xOffset;
   MovingDirection currentDirection = MovingDirection.stop;
@@ -48,7 +48,7 @@ class Clyde extends SpriteAnimationComponent
   @override //移動時若先改變xy
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     //按下按鈕後判斷往哪
-    previousDirection = currentDirection;
+    final previousDirection = currentDirection;
     if (keysPressed.contains(LogicalKeyboardKey.keyA)) {
       if (!isLeftWall) {
         currentDirection = MovingDirection.left;
@@ -80,9 +80,11 @@ class Clyde extends SpriteAnimationComponent
 
   @override
   void update(double dt) {
+    // firebaseDownload();
     move(dt);
     calculateGridPosition();
     findPassableWay();
+    //  firebaseUpload();
     super.update(dt);
   }
 
@@ -97,6 +99,26 @@ class Clyde extends SpriteAnimationComponent
         other.removeFromParent();
       }
     }
+  }
+
+  void firebaseDownload() {
+    final _firebaseInstance = FirebaseDatabase.instance;
+    _firebaseInstance.ref('/Clyde/').onValue.listen((DatabaseEvent event) {
+      var positionX = event.snapshot.child('PositionX').value; //讀資料
+      var positionY = event.snapshot.child('PositionY').value; //讀資料
+      position.x = positionX as double;
+      position.y = positionY as double;
+    });
+  }
+
+  void firebaseUpload() {
+    final _firebaseInstance = FirebaseDatabase.instance;
+    _firebaseInstance.databaseURL =
+        'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
+    _firebaseInstance.ref('/Clyde/').update({
+      "PositionX": position.x,
+      "PositionY": position.y,
+    });
   }
 
   void calculateGridPosition() {

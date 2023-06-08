@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flame_testing/segment/segment_manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame_testing/enum.dart';
@@ -11,10 +12,9 @@ class Pacman extends SpriteAnimationComponent
   final Vector2 velocity = Vector2.zero();
   final double moveSpeed = 150;
   bool isDirectionChanged = false;
-  late MovingDirection previousDirection;
-  Vector2 gridPosition = Vector2(10, 6);
+  Vector2 gridPosition = Vector2(10, 6); //firebase
   double xOffset;
-  MovingDirection currentDirection = MovingDirection.stop;
+  MovingDirection currentDirection = MovingDirection.stop; //firebase
   bool isUpWall = false;
   bool isDownWall = false;
   bool isLeftWall = false;
@@ -46,7 +46,7 @@ class Pacman extends SpriteAnimationComponent
   @override //移動時若先改變xy
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     //按下按鈕後判斷往哪
-    previousDirection = currentDirection;
+    final previousDirection = currentDirection;
     if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
       if (!isLeftWall) {
         currentDirection = MovingDirection.left;
@@ -82,16 +82,38 @@ class Pacman extends SpriteAnimationComponent
 
   @override
   void update(double dt) {
+    //firebaseDownload();
     move(dt);
     findAndCheckGridPosition();
     findPassableWay();
     faceAngle();
+    //firebaseUpload();
     super.update(dt);
   }
 
   void findAndCheckGridPosition() {
     gridPosition.x = (((position.x - xOffset) / 30).round()) as double;
     gridPosition.y = (((position.y) / 30).round()) as double;
+  }
+
+  void firebaseDownload() {
+    final _firebaseInstance = FirebaseDatabase.instance;
+    _firebaseInstance.ref('/Pacman').onValue.listen((DatabaseEvent event) {
+      var positionX = event.snapshot.child('PositionX').value; //讀資料
+      var positionY = event.snapshot.child('PositionY').value; //讀資料
+      position.x = positionX as double;
+      position.y = positionY as double;
+    });
+  }
+
+  void firebaseUpload() {
+    final _firebaseInstance = FirebaseDatabase.instance;
+    _firebaseInstance.databaseURL =
+        'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
+    _firebaseInstance.ref('/Pacman/').update({
+      "PositionX": position.x,
+      "PositionY": position.y,
+    });
   }
 
   void findPassableWay() {

@@ -29,7 +29,7 @@ class PowerPellet extends SpriteComponent
     if (other is Pacman) {
       removeFromParent();
       game.clyde.frightened();
-      game.blinky.frightened();
+      //game.blinky.frightened();
     }
   }
 }

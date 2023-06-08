@@ -1,6 +1,9 @@
+import 'dart:js_interop';
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,14 +34,17 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: TextButton(
             onPressed: () async {
-              //print('object');
-              final _firebaseInstance = await FirebaseDatabase.instance;
+              final _firebaseInstance = FirebaseDatabase.instance;
               _firebaseInstance.databaseURL =
                   'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
-              _firebaseInstance.ref('/').set({
-                'user': 'Eason',
+              _firebaseInstance.ref('/').onValue.listen((DatabaseEvent event) {
+                var data = event.snapshot.child('123').value; //讀資料
+                print(data);
               });
-              _firebaseInstance.ref('/').
+              _firebaseInstance.ref('/').update({
+                "user": "lichyo",
+                "123": "456",
+              });
             },
             child: const Text('onPressed'),
           ),
