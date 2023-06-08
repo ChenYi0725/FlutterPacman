@@ -4,6 +4,7 @@ import 'package:flame_testing/pacman_game.dart';
 import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'components/rounded_button.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +20,9 @@ void main() async {
   runApp(
       // const GameWidget<PacmanGame>.controlled(
       //   gameFactory: PacmanGame.new,
-      // ),
-      const WelcomePage());
+      // )
+      const WelcomePage(),
+  );
 }
 
 class WelcomePage extends StatefulWidget {
@@ -31,9 +33,18 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  final _firebase = FirebaseDatabase.instance;
+  bool isPlayer1 = false;
+  bool isPlayer2 = false;
   String player1 = "";
   String player2 = "";
   String roomID = "";
+  @override
+  void initState() {
+    super.initState();
+    _firebase.databaseURL =
+    'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +113,7 @@ class _WelcomePageState extends State<WelcomePage> {
                     onChanged: (value) {
                       setState(() {
                         player1 = value;
+                        roomID = '$player1\'room';
                       });
                     },
                   ),
@@ -120,6 +132,23 @@ class _WelcomePageState extends State<WelcomePage> {
                   print('player 1 : $player1');
                   print('player 2 : $player2');
                   print('roomID : $roomID');
+                  if(player1 != "") {
+                    setState(() {
+                      isPlayer1 = true;
+                    });
+                  }
+                  else {
+                    setState(() {
+                      isPlayer2 = true;
+                    });
+                  }
+                  _firebase.ref('/').update({
+                    "roomID": roomID,
+                  });
+                  _firebase.ref('/$roomID/').update({
+                    "player1": player1,
+                    "player2": player2,
+                  });
                 },
               ),
             ),
