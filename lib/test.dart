@@ -8,7 +8,7 @@ import 'dart:convert';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-      options: FirebaseOptions(
+      options: const FirebaseOptions(
     apiKey: "AIzaSyDQrugOGIy1DoXRuKkelx89pWZE4CdPSeA",
     databaseURL:
         "https://flutterpacman-default-rtdb.asia-southeast1.firebasedatabase.app",
