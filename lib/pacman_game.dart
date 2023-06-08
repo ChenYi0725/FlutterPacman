@@ -11,6 +11,7 @@ import 'object/dot.dart';
 import 'object/wall.dart';
 import 'segment/segment_manager.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'scorebar.dart';
 
 class PacmanGame extends FlameGame
     with
@@ -19,6 +20,7 @@ class PacmanGame extends FlameGame
         HasGameRef<PacmanGame> {
   FirebaseDatabase database = FirebaseDatabase.instance;
 
+  int dotCollected = 0;
   double xOffset = 70;
   final world = World();
   late final CameraComponent cameraComponent;
@@ -51,13 +53,13 @@ class PacmanGame extends FlameGame
     return const Color.fromARGB(255, 0, 0, 0);
   }
 
-  void drawPacman() {
+  void drawCharacter() {
     add(pacman);
+    add(clyde);
   }
 
   void drawGhost() {
-    add(clyde);
-    //add(blinky);
+    add(scorebar());
   }
 
   void drawMap(List map, double xOffset) {
@@ -91,7 +93,7 @@ class PacmanGame extends FlameGame
 
   void initializeGame() {
     drawMap(map, xOffset);
-    drawPacman();
+    drawCharacter();
     drawGhost();
   }
 }

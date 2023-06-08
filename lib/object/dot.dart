@@ -28,6 +28,7 @@ class Dot extends SpriteComponent
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Pacman) {
       removeFromParent();
+      game.dotCollected++;
     }
   }
 }
