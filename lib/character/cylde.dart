@@ -1,12 +1,20 @@
-import 'dart:math';
+import 'dart:html';
+import 'dart:js';
+
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flame_testing/game_over_page.dart';
 import 'package:flame_testing/segment/segment_manager.dart';
 import 'package:flame/components.dart';
 import 'package:flame_testing/enum.dart';
 import 'package:flame_testing/pacman_game.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame_testing/character/pacman.dart';
+import 'package:flame_testing/game_over_page.dart';
+import 'package:flame_testing/main.dart';
+
+import '../variable.dart';
 
 class Clyde extends SpriteAnimationComponent
     with KeyboardHandler, HasGameRef<PacmanGame>, CollisionCallbacks {
@@ -21,6 +29,7 @@ class Clyde extends SpriteAnimationComponent
   bool isDownWall = false;
   bool isLeftWall = false;
   bool isRightWall = false;
+  bool isGameOver = false;
 
   Clyde({
     required this.gridPosition,
@@ -48,43 +57,49 @@ class Clyde extends SpriteAnimationComponent
   @override //移動時若先改變xy
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     //按下按鈕後判斷往哪
-    final previousDirection = currentDirection;
-    if (keysPressed.contains(LogicalKeyboardKey.keyA)) {
-      if (!isLeftWall) {
-        currentDirection = MovingDirection.left;
+    if (Variable.isPlayer2) {
+      final previousDirection = currentDirection;
+      if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+        if (!isLeftWall) {
+          currentDirection = MovingDirection.left;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+        if (!isRightWall) {
+          currentDirection = MovingDirection.right;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+        if (!isUpWall) {
+          currentDirection = MovingDirection.up;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+        if (!isDownWall) {
+          currentDirection = MovingDirection.down;
+        }
+      } else {
+        currentDirection = MovingDirection.stop;
       }
-    } else if (keysPressed.contains(LogicalKeyboardKey.keyD)) {
-      if (!isRightWall) {
-        currentDirection = MovingDirection.right;
+      isUpWall = false;
+      isDownWall = false;
+      isRightWall = false;
+      isLeftWall = false;
+      if (currentDirection != previousDirection) {
+        isDirectionChanged = true;
       }
-    } else if (keysPressed.contains(LogicalKeyboardKey.keyW)) {
-      if (!isUpWall) {
-        currentDirection = MovingDirection.up;
-      }
-    } else if (keysPressed.contains(LogicalKeyboardKey.keyS)) {
-      if (!isDownWall) {
-        currentDirection = MovingDirection.down;
-      }
-    } else {
-      currentDirection = MovingDirection.stop;
-    }
-    isUpWall = false;
-    isDownWall = false;
-    isRightWall = false;
-    isLeftWall = false;
-    if (currentDirection != previousDirection) {
-      isDirectionChanged = true;
     }
     return true;
   }
 
   @override
   void update(double dt) {
-    // firebaseDownload();
+    if (Variable.isPlayer1) {
+      firebaseDownload();
+    }
     move(dt);
     calculateGridPosition();
     findPassableWay();
-    //  firebaseUpload();
+    if (Variable.isPlayer2) {
+      firebaseUpload();
+    }
     super.update(dt);
   }
 
@@ -96,6 +111,7 @@ class Clyde extends SpriteAnimationComponent
         isFrightened = false;
         removeFromParent();
       } else {
+        isGameOver = true;
         other.removeFromParent();
       }
     }

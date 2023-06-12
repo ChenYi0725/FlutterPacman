@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'constants.dart';
 import 'components/rounded_button.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'variable.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,10 +19,10 @@ void main() async {
     appId: "1:661444629295:web:0552e00e773c6d0bb107da",
   ));
   runApp(
-      // const GameWidget<PacmanGame>.controlled(
-      //   gameFactory: PacmanGame.new,
-      // )
-      const WelcomePage(),
+    // const GameWidget<PacmanGame>.controlled(
+    //   gameFactory: PacmanGame.new,
+    // )
+    const WelcomePage(),
   );
 }
 
@@ -30,6 +31,22 @@ class WelcomePage extends StatefulWidget {
 
   @override
   State<WelcomePage> createState() => _WelcomePageState();
+
+  bool isPlayer1() {
+    if (_WelcomePageState().isPlayer1) {
+      return true;
+    } else {
+      return true;
+    }
+  }
+
+  bool isPlayer2() {
+    if (_WelcomePageState().isPlayer2) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 class _WelcomePageState extends State<WelcomePage> {
@@ -43,116 +60,119 @@ class _WelcomePageState extends State<WelcomePage> {
   void initState() {
     super.initState();
     _firebase.databaseURL =
-    'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
+        'https://pacman-cd3c3-default-rtdb.asia-southeast1.firebasedatabase.app';
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 50.0,),
-                  const Text(
-                    'Join a Room',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 50.0,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 50.0,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  TextField(
-                    decoration: kTextFieldDecoration.copyWith(
-                      labelText: 'Enter room ID',
+                    const Text(
+                      'Join a Room',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 50.0,
+                      ),
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        roomID = value;
-                      });
-                    },
-                  ),
-                  const SizedBox(height: 15.0),
-                  TextField(
-                    decoration: kTextFieldDecoration.copyWith(
-                      labelText: 'Enter your name',
+                    const SizedBox(
+                      height: 15.0,
                     ),
-                    onChanged: (value) {
-                      setState(() {
-                        player2 = value;
-                      });
-                    },
-                  ),
-                ],
+                    TextField(
+                      decoration: kTextFieldDecoration.copyWith(
+                        labelText: 'Enter room ID',
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          roomID = value;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 15.0),
+                    TextField(
+                      decoration: kTextFieldDecoration.copyWith(
+                        labelText: 'Enter your name',
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          player2 = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50.0),
-              child: Column(
-                children: [
-                  const Text(
-                    'Create a Room',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 50.0,
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 50.0, vertical: 50.0),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Create a Room',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 50.0,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 15.0,
-                  ),
-                  TextField(
-                    decoration: kTextFieldDecoration.copyWith(
-                      labelText: 'Enter your name',
+                    const SizedBox(
+                      height: 15.0,
                     ),
-                    onChanged: (value) {
+                    TextField(
+                      decoration: kTextFieldDecoration.copyWith(
+                        labelText: 'Enter your name',
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          player1 = value;
+                          roomID = '$player1\'room';
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 30.0),
+                child: RoundedButton(
+                  title: 'Submit',
+                  color: Colors.blue,
+                  onPressed: () {
+                    print('player 1 : $player1');
+                    print('player 2 : $player2');
+                    print('roomID : $roomID');
+                    if (player1 != "") {
                       setState(() {
-                        player1 = value;
-                        roomID = '$player1\'room';
+                        Variable.isPlayer1 = true;
                       });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 50.0,
-                // horizontal: 50.0
-              ),
-              child: RoundedButton(
-                title: 'Submit',
-                color: Colors.blue,
-                onPressed: () {
-                  print('player 1 : $player1');
-                  print('player 2 : $player2');
-                  print('roomID : $roomID');
-                  if(player1 != "") {
-                    setState(() {
-                      isPlayer1 = true;
+                    } else {
+                      setState(() {
+                        Variable.isPlayer2 = true;
+                      });
+                    }
+                    _firebase.ref('/').update({
+                      "roomID": roomID,
                     });
-                  }
-                  else {
-                    setState(() {
-                      isPlayer2 = true;
+                    _firebase.ref('/$roomID/').update({
+                      "player1": player1,
+                      "player2": player2,
                     });
-                  }
-                  _firebase.ref('/').update({
-                    "roomID": roomID,
-                  });
-                  _firebase.ref('/$roomID/').update({
-                    "player1": player1,
-                    "player2": player2,
-                  });
-                },
+                    runApp(const GameWidget<PacmanGame>.controlled(
+                      gameFactory: PacmanGame.new,
+                    ));
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

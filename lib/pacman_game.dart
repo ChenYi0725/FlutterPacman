@@ -4,7 +4,9 @@ import 'package:flame_testing/character/pacman.dart';
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
+import 'package:flame_testing/game_over_page.dart';
 import 'package:flame_testing/object/power_pellet.dart';
+import 'package:flame_testing/variable.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/events.dart';
 import 'object/dot.dart';
@@ -12,6 +14,7 @@ import 'object/wall.dart';
 import 'segment/segment_manager.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'scorebar.dart';
+import 'main.dart';
 
 class PacmanGame extends FlameGame
     with
@@ -27,6 +30,7 @@ class PacmanGame extends FlameGame
   Pacman pacman = Pacman(gridPosition: Vector2(10, 6), xOffset: 70);
   Clyde clyde = Clyde(gridPosition: Vector2(10, 11), xOffset: 70);
   Blinky blinky = Blinky(gridPosition: Vector2(9, 11), xOffset: 70);
+
   // PacmanGame();
 
   @override
@@ -58,9 +62,15 @@ class PacmanGame extends FlameGame
     add(clyde);
   }
 
-  void drawGhost() {
-    add(scorebar());
+  @override
+  void update(double dt) {
+    if (this.clyde.isGameOver) {
+      overlays.add('GameOver');
+    }
+    super.update(dt);
   }
+
+  void drawObject() {}
 
   void drawMap(List map, double xOffset) {
     //畫出地圖
@@ -92,8 +102,9 @@ class PacmanGame extends FlameGame
   }
 
   void initializeGame() {
+    print(Variable.isPlayer2);
     drawMap(map, xOffset);
     drawCharacter();
-    drawGhost();
+    drawObject();
   }
 }

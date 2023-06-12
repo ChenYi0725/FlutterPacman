@@ -1,6 +1,6 @@
-import 'package:flame_testing/pacman_game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
+
+import '../pacman_game.dart';
 
 class GameOver extends StatelessWidget {
   // Reference to parent game.
@@ -41,7 +41,6 @@ class GameOver extends StatelessWidget {
                 height: 75,
                 child: ElevatedButton(
                   onPressed: () {
-                    //game.reset();
                     game.overlays.remove('GameOver');
                   },
                   style: ElevatedButton.styleFrom(

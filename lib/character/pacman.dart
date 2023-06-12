@@ -6,6 +6,9 @@ import 'package:flame_testing/enum.dart';
 import 'package:flame_testing/pacman_game.dart';
 import 'package:flutter/services.dart';
 import 'package:flame/collisions.dart';
+import 'package:flame_testing/main.dart';
+
+import '../variable.dart';
 
 class Pacman extends SpriteAnimationComponent
     with KeyboardHandler, HasGameRef<PacmanGame> {
@@ -46,33 +49,36 @@ class Pacman extends SpriteAnimationComponent
   @override //移動時若先改變xy
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     //按下按鈕後判斷往哪
-    final previousDirection = currentDirection;
-    if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      if (!isLeftWall) {
-        currentDirection = MovingDirection.left;
+    if (Variable.isPlayer1) {
+      final previousDirection = currentDirection;
+      if (keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+        if (!isLeftWall) {
+          currentDirection = MovingDirection.left;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+        if (!isRightWall) {
+          currentDirection = MovingDirection.right;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+        if (!isUpWall) {
+          currentDirection = MovingDirection.up;
+        }
+      } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+        if (!isDownWall) {
+          currentDirection = MovingDirection.down;
+        }
+      } else {
+        currentDirection = MovingDirection.stop;
       }
-    } else if (keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      if (!isRightWall) {
-        currentDirection = MovingDirection.right;
+      isUpWall = false;
+      isDownWall = false;
+      isRightWall = false;
+      isLeftWall = false;
+      if (currentDirection != previousDirection) {
+        isDirectionChanged = true;
       }
-    } else if (keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
-      if (!isUpWall) {
-        currentDirection = MovingDirection.up;
-      }
-    } else if (keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
-      if (!isDownWall) {
-        currentDirection = MovingDirection.down;
-      }
-    } else {
-      currentDirection = MovingDirection.stop;
     }
-    isUpWall = false;
-    isDownWall = false;
-    isRightWall = false;
-    isLeftWall = false;
-    if (currentDirection != previousDirection) {
-      isDirectionChanged = true;
-    }
+
     return true;
   }
 
@@ -82,12 +88,17 @@ class Pacman extends SpriteAnimationComponent
 
   @override
   void update(double dt) {
-    //firebaseDownload();
+    if (Variable.isPlayer2) {
+      firebaseDownload();
+    }
     move(dt);
     findAndCheckGridPosition();
     findPassableWay();
     faceAngle();
-    //firebaseUpload();
+    if (Variable.isPlayer1) {
+      firebaseUpload();
+    }
+
     super.update(dt);
   }
 
@@ -98,7 +109,7 @@ class Pacman extends SpriteAnimationComponent
 
   void firebaseDownload() {
     final _firebaseInstance = FirebaseDatabase.instance;
-    _firebaseInstance.ref('/Pacman').onValue.listen((DatabaseEvent event) {
+    _firebaseInstance.ref('/Pacman/').onValue.listen((DatabaseEvent event) {
       var positionX = event.snapshot.child('PositionX').value; //讀資料
       var positionY = event.snapshot.child('PositionY').value; //讀資料
       position.x = positionX as double;
@@ -140,6 +151,7 @@ class Pacman extends SpriteAnimationComponent
     switch (currentDirection) {
       case MovingDirection.up:
         angle = 3 * pi / 2;
+
         break;
       case MovingDirection.down:
         angle = pi / 2;
